@@ -4,12 +4,14 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
 
 //middlewars call starts
+    app.use(cors());
     app.use(express.json());
     app.use(morgan('dev'));
 //middlewars call ends
