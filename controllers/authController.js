@@ -2,58 +2,61 @@ import { comparePassword, hashPassword } from "../helpers/authHelper.js";
 import userModel from "../models/userModel.js";
 import JWT from 'jsonwebtoken';
 
-export const registerController = async(req,res) =>{
+export const registerController = async (req, res) => {
     try {
-        const {name,email,password,phone,address} = req.body;
-        if(!name){
-            return res.send({message:"Name is required"})
+        const { name, email, password, phone, address,answer } = req.body;
+        if (!name) {
+            return res.send({ message: "Name is required" })
         }
-        if(!email){
-            return res.send({message:"Email is required"})
+        if (!email) {
+            return res.send({ message: "Email is required" })
         }
-        if(!password){
-            return res.send({message:"Password is required"})
+        if (!password) {
+            return res.send({ message: "Password is required" })
         }
-        if(!phone){
-            return res.send({message:"Phone is required"})
+        if (!phone) {
+            return res.send({ message: "Phone is required" })
         }
-        if(!address){
-            return res.send({message:"Address is required"})
+        if (!address) {
+            return res.send({ message: "Address is required" })
+        }
+        if (!answer) {
+            return res.send({ message: "Answer is required" })
         }
 
-        const existingUser = await userModel.findOne({email});
+        const existingUser = await userModel.findOne({ email });
 
-        if(existingUser){
+        if (existingUser) {
             return res.status(200).send({
-                success:true,
-                message:"already register please login",
+                success: true,
+                message: "already register please login",
             })
 
         }
 
         const hashedPassword = await hashPassword(password);
 
-        const user =await new userModel({ name, email, phone, password: hashedPassword, address });
+        const user = await new userModel({ name, email, phone, password: hashedPassword, address,answer });
         await user.save();
 
         res.status(201).send({
-            success:true,
-            message:"User Register successfull",
+            success: true,
+            message: "User Register successfull",
             user
         })
     } catch (error) {
         console.log(error);
         res.status(500).send({
-            success:false,
-            message:"Error in Registration",
+            success: false,
+            message: "Error in Registration",
             error
         })
     }
 };
 
-export const loginController = async(req,res) => {
-    try{
-        const {email,password} = req.body;
+export const loginController = async (req, res) => {
+    try {
+        const { email, password } = req.body;
         console.log(req.body)
         if (!email || !password) {
             return res.status(400).send({
@@ -61,46 +64,77 @@ export const loginController = async(req,res) => {
                 message: 'Invalid Email or Password'
             });
         }
-        const user = await userModel.findOne({email});
-        if(!user){
+        const user = await userModel.findOne({ email });
+        if (!user) {
             return res.status(404).send({
-                success:false,
-                message:'Email is not registered'
+                success: false,
+                message: 'Email is not registered'
             })
         }
 
-        const match = await comparePassword(password ,user.password);
-        if(!match){
+        const match = await comparePassword(password, user.password);
+        if (!match) {
             return res.status(200).send({
-                success:false,
-                message:'Invalid Password'
+                success: false,
+                message: 'Invalid Password'
             })
         }
 
-        const token = await JWT.sign({_id:user._id},process.env.JWT_SECRET,{expiresIn:"2d"})
+        const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "2d" })
 
         res.status(200).send({
-            success:true,
-            message:"Login successfully",
-            user:{
-                name:user.name,
-                email:user.email,
-                phone:user.phone,
-                address:user.address
+            success: true,
+            message: "Login successfully",
+            user: {
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                address: user.address
             },
             token
         })
-    }catch(error){
+    } catch (error) {
         console.log(error);
         res.status(500).send({
-            success:false,
-            message:"Error in login",
+            success: false,
+            message: "Error in login",
             error
         })
     }
 };
 
+export const forgotPasswordContainer = async (req, res) => {
+    // console.log("forgot ps", req.body)
+    try {
+        const { email, answer, newpassword } = req.body;
+        if (!email) {
+            res.status(400).send({message: "Email is required"})
+        }
+        if (!answer) {
+            res.status(400).send({message: "Answer is required"})
+        }
+        if (!newpassword) {
+            res.status(400).send({message: "New Password is required"})
+        }
 
-export const TestController = async(req,res) =>{
+        const user = await userModel.findOne({email});
+        // console.log("user",user)
+        const hashed =await hashPassword(newpassword);
+        await userModel.findByIdAndUpdate(user._id,{ password: hashed });
+        res.status(200).send({
+            success:true,
+            message:"password reset successfully"
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+            success: false,
+            message: "something went wrong",
+            error
+        })
+    }
+}
+
+export const TestController = async (req, res) => {
     res.send("test Controller")
 }

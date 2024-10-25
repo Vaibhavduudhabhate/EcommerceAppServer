@@ -25,12 +25,11 @@ const userSchema = new mongoose.Schema({
     },
     role:{
         type:Number
+    },
+    answer:{
+        type:String,    
+        required:true,
     }
-    // phone:{
-    //     type:String,
-    //     default:0,
-    // }
-
 },{timestamps:true})
 
 export default mongoose.model("ExpressP",userSchema)
