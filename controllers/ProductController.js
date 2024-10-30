@@ -71,7 +71,7 @@ export const getSingleProductController = async(req,res) =>{
         res.status(200).send({
             success: true,
             product,
-            message: "Error while getting single product list"
+            message: "single product"
         })
     } catch (error) {
         console.log(error)
@@ -149,7 +149,7 @@ export const updateProductController = async(req,res)=>{
 
         res.status(201).send({
             success:true,
-            message:"product updated successfully",
+            message:"Product updated successfully",
             products
         })
     } catch (error) {
