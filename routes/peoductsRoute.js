@@ -11,7 +11,7 @@ router.put("/update-product/:pid",requireSignIn,isAdmin,formidable(),updateProdu
 router.get("/get-product",getAllProductController)
 router.get("/get-product/:slug",getSingleProductController)
 router.get("/product-photo/:pid",productPhotoController)
-router.get("/product",productDeleteController)
+router.delete("/delete-product/:pid",productDeleteController)
 
 
 
