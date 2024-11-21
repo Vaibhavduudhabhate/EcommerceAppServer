@@ -58,7 +58,7 @@ export const loginController = async (req, res) => {
     try {
         const { email, password } = req.body;
         console.log(req.body)
-        if (!email || !password) {
+        if (!email ) {
             return res.status(400).send({
                 success: false,
                 message: 'Invalid Email or Password'
@@ -71,7 +71,7 @@ export const loginController = async (req, res) => {
                 message: 'Email is not registered'
             })
         }
-
+        console.log(password,user.password)
         const match = await comparePassword(password, user.password);
         if (!match) {
             return res.status(200).send({
@@ -141,17 +141,22 @@ export const updateProfileController = async (req,res) => {
         const {name,email,address,phone,password} = req.body;
         const user = await userModel.findById(req.user._id)
         // password
-        if(!password && password.length < 6){
+        if(password && password.length < 6){
             return res.json({error:"Password is required and have 6 characters long"})
         }
-        const hashedPassword = password|| await hashPassword 
-        const updatedUser = await userModel.findByIdAndUpdate(req.user,_id,{
+        const hashedPassword = password|| await hashPassword(password) 
+        const updatedUser = await userModel.findByIdAndUpdate(req.user._id,{
             name: name || user.name,
             email:email || user.email,
             address:address || user.address,
             phone:phone || user.phone,
-            password:password || user.password
+            password:hashedPassword || user.password
         },{new:true})
+        res.status(200).send({
+            success: true,
+            message: "Profile Updated Successfully",
+            updatedUser
+        })
     } catch (error) {
         console.log(error)
         res.status(400).send({
