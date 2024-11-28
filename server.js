@@ -10,6 +10,8 @@ import productsRoutes from "./routes/peoductsRoute.js"
 dotenv.config();
 
 const app = express();
+const serverless = require("serverless-http");
+const router = express.Router();
 
 //middlewars call starts
     app.use(cors());
@@ -25,14 +27,15 @@ app.use('/api/product',productsRoutes)
 connectDB();
 
 
-app.get("/",(req,res)=>{
+router.get("/",(req,res)=>{
     res.send({
         message:"welcome to express server"
     })
 })
 
 const PORT = process.env.PORT || 8080;
-
+app.use("/.netlify/functions/app", router);
 app.listen(PORT ,()=>{
     console.log(`server running on ${process.env.DEV_MODE} mode on PORT ${PORT}`.bgCyan.white)
 })
+module.exports.handler = serverless(app);
