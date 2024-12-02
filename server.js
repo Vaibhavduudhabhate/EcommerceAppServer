@@ -27,7 +27,7 @@ connectDB();
 
 app.get("/",(req,res)=>{
     res.send({
-        message:"welcome to express server ON live"
+        message:"welcome to express server on live"
     })
 })
 
