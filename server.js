@@ -7,6 +7,7 @@ import authRoutes from "./routes/authRoutes.js";
 import cors from "cors";
 import categoryRoutes from "./routes/categoryRoutes.js"
 import productsRoutes from "./routes/peoductsRoute.js"
+import addToCartRoutes from "./routes/addToCartRoutes.js"
 dotenv.config();
 
 const app = express();
@@ -20,6 +21,7 @@ const app = express();
 app.use('/api', authRoutes);
 app.use('/api/category', categoryRoutes);
 app.use('/api/product',productsRoutes)
+app.use('/api/addtocart',addToCartRoutes)
 
 //database connection
 connectDB();
